@@ -85,10 +85,10 @@ def save_info():
         label.place(x = 15, y = 380)
 
         ##Block allocation(any 3)
+        blocf1 = cloning(la)
         for i in range(0,3):
-            bloc1=""
-            blocf1 = cloning(la)
-            blocf1[3] += noofaddr*i + 1
+            # blocf1 = cloning(la)
+            blocf1[3] += noofaddr*i+1
             if(blocf1[3]>255):
                 blocf1[2] += 1
                 blocf1[3] = 0 
@@ -100,7 +100,7 @@ def save_info():
             label = Label(screen, text= "Block {}: {}.{}.{}.{}/{} - {}.{}.{}.{}/{}".format(i+1,blocf1[0],blocf1[1],blocf1[2],blocf1[3],prefix_info,blocl1[0],blocl1[1],blocl1[2],blocl1[3],prefix_info))
             label.pack() 
             label.place(x = 15, y = 400+i*20)
-            # print("Block {}: {}.{}.{}.{}/{} - {}.{}.{}.{}/{}".format(i+1,blocf1[0],blocf1[1],blocf1[2],blocf1[3],prefix_info,blocl1[0],blocl1[1],blocl1[2],blocl1[3],prefix_info))
+           
 
         
     
