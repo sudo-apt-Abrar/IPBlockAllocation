@@ -67,12 +67,22 @@ def save_info():
         ##Block size and Display
         noofaddr = int(pow(2,32-prefix_info))
 
-        print("First Address: "+firadd)
-        print("Last Address: "+lar)
+        # print("First Address: "+firadd)
+        label = Label(screen, text= "First Address: {}".format(firadd))
+        label.pack() 
+        label.place(x = 15, y = 320)
+        label = Label(screen, text= "Last Address: {}".format(lar))
+        label.pack() 
+        label.place(x = 15, y = 340)
+        # print("Last Address: "+lar)
         
-        
-        print("No. of addresses: {}".format(noofaddr))
-        print("Block allocated:")
+        label = Label(screen, text= "No. of addresses: {}".format(noofaddr))
+        label.pack() 
+        label.place(x = 15, y = 360)
+        # print("No. of addresses: {}".format(noofaddr))
+        label = Label(screen, text= "Block Allocation:")
+        label.pack() 
+        label.place(x = 15, y = 380)
 
         ##Block allocation(any 3)
         for i in range(0,3):
@@ -87,7 +97,10 @@ def save_info():
             if(blocl1[3]>255):
                 blocl1[2] += 1
                 blocl1[3] = 0 
-            print("{}.{}.{}.{}/{} - {}.{}.{}.{}/{}".format(blocf1[0],blocf1[1],blocf1[2],blocf1[3],prefix_info,blocl1[0],blocl1[1],blocl1[2],blocl1[3],prefix_info))
+            label = Label(screen, text= "Block {}: {}.{}.{}.{}/{} - {}.{}.{}.{}/{}".format(i+1,blocf1[0],blocf1[1],blocf1[2],blocf1[3],prefix_info,blocl1[0],blocl1[1],blocl1[2],blocl1[3],prefix_info))
+            label.pack() 
+            label.place(x = 15, y = 400+i*20)
+            # print("Block {}: {}.{}.{}.{}/{} - {}.{}.{}.{}/{}".format(i+1,blocf1[0],blocf1[1],blocf1[2],blocf1[3],prefix_info,blocl1[0],blocl1[1],blocl1[2],blocl1[3],prefix_info))
 
         
     
@@ -107,10 +120,10 @@ ip_entry = Entry(textvariable = ip, width = "30")
 prefix_entry = Entry(textvariable = prefix, width = "30")
 
 ip_entry.place(x = 15, y = 100)
-prefix_entry.place(x = 15, y = 180)
+prefix_entry.place(x = 15, y = 170)
 
 submit = Button(screen,text = "Check Now", width = "30", height = "2", command = save_info, bg = "grey")
-submit.place(x = 15, y = 240)
+submit.place(x = 15, y = 220)
 
 #binarytodecimal
 def binaryToDecimal(n):
@@ -141,26 +154,40 @@ def validIPv4(ip):
     parts = ip.split(".")
 
     if len(parts) != 4:
-        print("IP address {} is not valid".format(ip))
+        label = Label(screen, text= "IP address {} is not valid".format(ip))
+        label.pack() 
+        label.place(x = 15, y = 280) 
+        # print("IP address {} is not valid".format(ip))
         return False
 
     for part in parts:
         if not isinstance(int(part), int):
-            print("IP address {} is not valid".format(ip))
+            label = Label(screen, text= "IP address {} is not valid".format(ip))
+            label.pack()
+            label.place(x = 15, y = 280) 
             return False
 
         if int(part) < 0 or int(part) > 255:
-            print("IP address {} is not valid".format(ip))
+            label = Label(screen, text= "IP address {} is not valid".format(ip))
+            label.pack() 
+            label.place(x = 15, y = 280) 
             return False
  
-    print("IP address {} is valid".format(ip))
+    label = Label(screen, text= "IP address {} is valid".format(ip))
+    label.pack() 
+    label.place(x = 15, y = 280) 
     return True 
 
 def validmask(msk):
     if(msk<1 or msk>32):
-        print("Mask {} is not valid".format(msk))
+        label = Label(screen, text= "Mask {} is not valid".format(msk))
+        label.pack() 
+        label.place(x = 15, y = 300)
         return False
     else:
+        label = Label(screen, text= "Mask {} is valid".format(msk))
+        label.pack() 
+        label.place(x = 15, y = 300)
         return True
 
 screen.mainloop()
