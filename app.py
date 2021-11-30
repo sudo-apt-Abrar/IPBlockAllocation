@@ -1,19 +1,116 @@
-import streamlit as st
-from streamlit.proto.RootContainer_pb2 import MAIN
+from tkinter import *
+import tkinter as tk
 
-st.title("IP Block Allocation")
+"""GUI using tkinter"""
 
-#taking input
-ip = st.text_input('Insert IP')
-ip = str(ip)
+screen = tk.Tk()
+screen.geometry("500x500")
+screen.title("IP Block Allocation")
+heading = Label(text = "IP Block Allocation", bg = "grey", fg = "black", width = "500", height = "3")
+heading.pack()
 
-#if considering prefix value instead of mask
-prefix = st.number_input('Insert Network Mask')
-prefix = int(prefix)
+##command
+def save_info():
+    ip_info = ip.get()
+    prefix_info = prefix.get()
+    ipval = validIPv4(ip_info)
+    maskval = validmask(prefix_info)
+    if(ipval and maskval):
+        parts = ip_info.split(".")
+        map_parts = map(int,parts)
+        #integer list of ip
+        ip_list=list(map_parts)
+        
+        mask = 1
+        for i in range (1,32):
+            if(i<prefix_info):
+                mask = mask*10 + 1
+            else:
+                mask = mask*10 + 0
 
-#decimaltobinary
-def decimalToBinary(n):
-    return bin(n).replace("0b","")
+        mask = str(mask)
+
+        #converting the mask to numeric split int-array
+        res = []
+        for idx in range(0, len(mask), 8):
+            res.append(mask[idx : idx + 8])
+
+        fa=[]
+        firadd=""
+        for i in range (0,4):
+            fa.append(binaryToDecimal(res[i]) & ip_list[i])
+            if(i<3):
+                firadd += str(fa[i])+"."
+            else:
+                firadd+= str(fa[i])
+
+        ##Last Address
+        #Not of mask
+        def rev(str):
+            rev=''
+            for i in str:
+                if i == '1':
+                    rev += '0'
+                elif i == '0':
+                    rev += '1'
+            return rev
+
+        la=[]
+        lar=""
+        for i in range(0,4):
+            la.append(binaryToDecimal(rev((res[i]))) | ip_list[i])  
+            if(i<3):
+                lar += str(la[i])+"."
+            else:
+                lar+= str(la[i])
+
+        ##Block size and Display
+        noofaddr = int(pow(2,32-prefix_info))
+
+        print("First Address: "+firadd)
+        print("Last Address: "+lar)
+        
+        
+        print("No. of addresses: {}".format(noofaddr))
+        print("Block allocated:")
+
+        ##Block allocation(any 3)
+        for i in range(0,3):
+            bloc1=""
+            blocf1 = cloning(la)
+            blocf1[3] += noofaddr*i + 1
+            if(blocf1[3]>255):
+                blocf1[2] += 1
+                blocf1[3] = 0 
+            blocl1 = cloning(blocf1)
+            blocl1[3] += noofaddr-1
+            if(blocl1[3]>255):
+                blocl1[2] += 1
+                blocl1[3] = 0 
+            print("{}.{}.{}.{}/{} - {}.{}.{}.{}/{}".format(blocf1[0],blocf1[1],blocf1[2],blocf1[3],prefix_info,blocl1[0],blocl1[1],blocl1[2],blocl1[3],prefix_info))
+
+        
+    
+
+##Labelling GUI
+ip_text = Label(text = "IP Address * ",)
+prefix_text = Label(text = "MASK * ",)
+ip_text.place(x = 15, y = 70)
+prefix_text.place(x = 15, y = 140)
+
+
+
+ip = StringVar()
+prefix = IntVar()
+
+ip_entry = Entry(textvariable = ip, width = "30")
+prefix_entry = Entry(textvariable = prefix, width = "30")
+
+ip_entry.place(x = 15, y = 100)
+prefix_entry.place(x = 15, y = 180)
+
+submit = Button(screen,text = "Check Now", width = "30", height = "2", command = save_info, bg = "grey")
+submit.place(x = 15, y = 240)
 
 #binarytodecimal
 def binaryToDecimal(n):
@@ -32,85 +129,38 @@ def binaryToDecimal(n):
      
     return dec_value
 
-"""IP Validation"""
-#validation function
+#copying ip
+def cloning(li1):
+    li_copy = li1[:]
+    return li_copy
+
+## IP Validation
+#validation functions
 
 def validIPv4(ip):
     parts = ip.split(".")
 
     if len(parts) != 4:
-        st.write("IP address {} is not valid".format(ip))
+        print("IP address {} is not valid".format(ip))
         return False
 
     for part in parts:
         if not isinstance(int(part), int):
-            st.write("IP address {} is not valid".format(ip))
+            print("IP address {} is not valid".format(ip))
             return False
 
         if int(part) < 0 or int(part) > 255:
-            st.write("IP address {} is not valid".format(ip))
+            print("IP address {} is not valid".format(ip))
             return False
  
-    st.write("IP address {} is valid".format(ip))
+    print("IP address {} is valid".format(ip))
     return True 
 
-"""First Adress"""
-
-parts = ip.split('.')
-map_parts = map(int,parts)
-#integer list of ip
-ip_list=list(map_parts)
-
-mask = 1
-for i in range (1,32):
-    if(i<prefix):
-        mask = mask*10 + 1
+def validmask(msk):
+    if(msk<1 or msk>32):
+        print("Mask {} is not valid".format(msk))
+        return False
     else:
-        mask = mask*10 + 0
+        return True
 
-mask = str(mask)
-
-#converting the mask to numeric split int-array
-res = []
-for idx in range(0, len(mask), 8):
-    res.append(mask[idx : idx + 8])
-
-fa=[]
-firadd=""
-for i in range (0,4):
-    fa.append(binaryToDecimal(res[i]) & ip_list[i])
-    if(i<3):
-        firadd += str(fa[i])+"."
-    else:
-        firadd+= str(fa[i])
-
-"""Last Address"""
-#Not of mask
-def rev(str):
-    rev=''
-    for i in str:
-        if i == '1':
-            rev += '0'
-        elif i == '0':
-            rev += '1'
-    return rev
-
-la=[]
-lar=""
-for i in range(0,4):
-    la.append(binaryToDecimal(rev((res[i]))) | ip_list[i])  
-    if(i<3):
-        lar += str(la[i])+"."
-    else:
-        lar+= str(la[i])
-
-# Driver's code
-if __name__ == "__main__":
-    validIPv4(ip)
-    st.write(firadd)
-
-    noofaddr = int(pow(2,32-prefix))
-    st.write(noofaddr)
-
-    st.write(lar)
- 
+screen.mainloop()
